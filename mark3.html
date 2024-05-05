@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stress Detection</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200vh;
+    }
+
+    #stressDetection {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      padding: 40px;
+      width: 400px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input[type="range"] {
+      width: calc(100% - 20px);
+      margin: 10px 0;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #speedometerContainer {
+      position: relative;
+      width: 100%;
+      height: 150px;
+    }
+
+    #speedometerCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    #healthTips {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 14px;
+      color: #555;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button {
+    background-color: #0095ff;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+  </style>
+</head>
+<body>
+
+<div id="stressDetection">
+  <h1>Stress Detection</h1>
+
+  <div class="question">
+    <label for="q1">How often do you feel overwhelmed?</label>
+    <input type="range" id="q1" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q2">Do you have trouble sleeping?</label>
+    <input type="range" id="q2" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q3">Are you easily irritable?</label>
+    <input type="range" id="q3" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q4">How often do you take breaks during work/study?</label>
+    <input type="range" id="q4" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q5">Do you engage in regular physical exercise?</label>
+    <input type="range" id="q5" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q6">How would you rate your overall happiness?</label>
+    <input type="range" id="q6" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q7">How often do you communicate with friends or family?</label>
+    <input type="range" id="q7" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q8">Do you have a balanced diet?</label>
+    <input type="range" id="q8" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q9">How do you manage your time?</label>
+    <input type="range" id="q9" min="1" max="10" value="0">
+  </div>
+
+  <div class="question">
+    <label for="q10">How often do you experience physical symptoms of stress (e.g., headaches, muscle tension)?</label>
+    <input type="range" id="q10" min="1" max="10" value="0">
+  </div>
+
+  <button onclick="calculateStress()">Calculate Stress Level</button>
+  <button type="submit"> <a href="Mark4.html" id="loginpage">Next</a></button>
+
+  <div id="result"></div>
+
+  <div id="speedometerContainer">
+    <canvas id="speedometerCanvas"></canvas>
+  </div>
+
+  <div id="healthTips"></div>
+</div>
+
+<script>
+  function calculateStress() {
+    // Get answers to questions
+    const q1 = parseInt(document.getElementById('q1').value);
+    const q2 = parseInt(document.getElementById('q2').value);
+    const q3 = parseInt(document.getElementById('q3').value);
+    const q4 = parseInt(document.getElementById('q4').value);
+    const q5 = parseInt(document.getElementById('q5').value);
+    const q6 = parseInt(document.getElementById('q6').value);
+    const q7 = parseInt(document.getElementById('q7').value);
+    const q8 = parseInt(document.getElementById('q8').value);
+    const q9 = parseInt(document.getElementById('q9').value);
+    const q10 = parseInt(document.getElementById('q10').value);
+
+    // Calculate stress level (a simple average in this example)
+    const stressLevel = (q1 + q2 + q3 + q4 + q5 + q6 + q7 + q8 + q9 + q10) / 10;
+
+    // Display the result
+    const resultElement = document.getElementById('result');
+    resultElement.textContent = `Your stress level is: ${stressLevel.toFixed(2)}`;
+
+    // Update the speedometer visually
+    const speedometerCanvas = document.getElementById('speedometerCanvas');
+    drawSpeedometer(speedometerCanvas, stressLevel);
+
+    // Display health tips based on stress level
+    displayHealthTips(stressLevel);
+  }
+
+  function drawSpeedometer(canvas, value) {
+    const context = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 10;
+
+    // Clear the canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the meter background
+    context.beginPath();
+    context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    context.fillStyle = '#eee';
+    context.fill();
+
+    // Draw the meter value
+    const startAngle = -Math.PI / 2;
+    const endAngle = startAngle + (value * 2 * Math.PI) / 10;
+    context.beginPath();
+    context.moveTo(centerX, centerY);
+    context.arc(centerX, centerY, radius, startAngle, endAngle);
+    context.fillStyle = '#4caf50';
+    context.fill();
+  }
+
+  function displayHealthTips(stressLevel) {
+    const healthTipsElement = document.getElementById('healthTips');
+    healthTipsElement.innerHTML = '';
+
+    if (stressLevel >= 7) {
+      // High stress level tips
+      const highStressTips = [
+        "Practice deep breathing exercises daily.",
+        "Consider talking to a mental health professional.",
+        "Take short breaks to relax during the day.",
+        "Engage in activities you enjoy to relieve stress.",
+        "Establish a regular sleep routine for better rest.",
+        "Limit exposure to stressful situations.",
+        "Prioritize self-care and personal time.",
+        "Consider incorporating relaxation techniques like yoga.",
+        "Seek social support from friends and family.",
+        "Explore hobbies that bring joy and relaxation."
+      ];
+
+      healthTipsElement.innerHTML = "<strong>Health Tips for High Stress:</strong><ul>";
+      highStressTips.forEach(tip => {
+        healthTipsElement.innerHTML += `<li>${tip}</li>`;
+      });
+      healthTipsElement.innerHTML += "</ul>";
+    } else {
+      // Low stress level tips
+      const lowStressTips = [
+        "Maintain regular physical exercise for overall well-being.",
+        "Practice mindfulness meditation for relaxation.",
+        "Ensure a balanced diet with fruits and vegetables.",
+        "Build a strong social support network.",
+        "Get quality sleep to support overall health.",
+        "Engage in activities that bring joy and fulfillment.",
+        "Establish healthy boundaries for work and personal life.",
+        "Consider learning and practicing time management skills.",
+        "Take breaks during the day to refresh your mind.",
+        "Explore creative outlets as a form of stress relief."
+      ];
+
+      healthTipsElement.innerHTML = "<strong>Health Tips for Low Stress:</strong><ul>";
+      lowStressTips.forEach(tip => {
+        healthTipsElement.innerHTML += `<li>${tip}</li>`;
+      });
+      healthTipsElement.innerHTML += "</ul>";
+    }
+  }
+</script>
+
+</body>
+</html>
